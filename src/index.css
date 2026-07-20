@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Явно светлая схема: панель предпросмотра/ОС в тёмном режиме не должна
+     затемнять канвас — бренд Шебер строится на тёплой «бумаге». */
+  color-scheme: light;
+}
+
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  background-color: #f7f1e6;
+  color: #2d221b;
+  /* фактура бумаги: тёплые «пятна света» + едва заметная точечная сетка */
+  background-image:
+    radial-gradient(1200px 500px at 15% -5%, rgba(188, 91, 53, 0.05), transparent 60%),
+    radial-gradient(900px 420px at 95% 0%, rgba(184, 134, 43, 0.06), transparent 55%),
+    radial-gradient(rgba(45, 34, 27, 0.028) 1px, transparent 1px);
+  background-size: auto, auto, 22px 22px;
+}
+
+::selection {
+  background: rgba(188, 91, 53, 0.25);
+}

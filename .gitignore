@@ -1,0 +1,25 @@
+# ==== Зависимости ====
+node_modules/
+
+# ==== Сборка ====
+dist/
+*.tsbuildinfo
+
+# ==== Окружение ====
+.env
+.env.local
+.env.*.local
+
+# ==== Логи ====
+*.log
+npm-debug.log*
+
+# ==== OS ====
+.DS_Store
+Thumbs.db
+
+# ==== IDE ====
+.vscode/
+.idea/
+*.swp
+*.swo
