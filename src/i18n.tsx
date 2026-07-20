@@ -5,12 +5,33 @@ export type Lang = "ru" | "kk";
 
 const STORAGE_KEY = "sheber_lang";
 
+export function plural(n: number, one: string, few: string, many: string): string {
+  const m10 = n % 10;
+  const m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+
 type Dict = Record<string, string>;
 
 const STRINGS: Record<Lang, Dict> = {
   ru: {
     heroHeadline: "Украшения и изделия ручной работы — напрямую от мастеров Казахстана",
     tagline: "Каждое изделие — от мастера, напрямую и без посредников. Оплата и доставка без комиссий площадки.",
+    tabHome: "Главная",
+    tabCatalog: "Витрина",
+    heroEyebrow: "Ручная работа · Казахстан",
+    exploreCatalog: "Смотреть витрину →",
+    value1Title: "Напрямую от мастера",
+    value1Text: "Общаетесь и покупаете у автора изделия — без посредников и колл-центров.",
+    value2Title: "Без комиссий площадки",
+    value2Text: "Оплата напрямую мастеру. Честная цена без наценок агрегатора.",
+    value3Title: "Карточку собрал ИИ",
+    value3Text: "Фото, характеристики и описание бот аккуратно оформил по паре фраз мастера.",
+    featuredTitle: "Свежее на витрине",
+    featuredSubtitle: "Последние изделия от мастеров Казахстана",
+    allProductsLink: "Все изделия →",
     searchPlaceholder: "Поиск: серьги, войлок, керамика…",
     soldSuffix: "продано",
     becomeSeller: "Я мастер — продавать через бота →",
@@ -65,6 +86,19 @@ const STRINGS: Record<Lang, Dict> = {
   kk: {
     heroHeadline: "Қолжасау бұйымдары — тікелей Қазақстан шеберлерінен",
     tagline: "Әр бұйым — шебердің өзінен, делдалсыз. Төлем мен жеткізу алаң комиссиясыз.",
+    tabHome: "Басты бет",
+    tabCatalog: "Витрина",
+    heroEyebrow: "Қолжасау · Қазақстан",
+    exploreCatalog: "Витринаны қарау →",
+    value1Title: "Тікелей шебердің өзінен",
+    value1Text: "Бұйым авторымен сөйлесіп, тікелей сатып аласыз — делдалсыз.",
+    value2Title: "Алаң комиссиясыз",
+    value2Text: "Төлем тікелей шеберге. Агрегатор үстемесіз әділ баға.",
+    value3Title: "Карточканы ИИ жинады",
+    value3Text: "Фото, сипаттама мен мәтінді бот шебердің бірнеше сөзі бойынша рәсімдеді.",
+    featuredTitle: "Витринадағы жаңалықтар",
+    featuredSubtitle: "Қазақстан шеберлерінің соңғы бұйымдары",
+    allProductsLink: "Барлық бұйымдар →",
     searchPlaceholder: "Іздеу: сырға, киіз, керамика…",
     soldSuffix: "сатылды",
     becomeSeller: "Мен шебермін — бот арқылы сату →",

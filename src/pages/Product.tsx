@@ -9,7 +9,7 @@ import { availabilityLabel, useLang } from "../i18n.tsx";
 import { localizeProduct } from "../localize.ts";
 import type { Product as ProductType, StoryboardCard } from "../types.ts";
 
-const PLACEHOLDER = "/logo/logo_loading.png";
+const PLACEHOLDER = "/logo/logo_mini.png";
 
 export default function Product() {
   const { lang, t } = useLang();
@@ -85,9 +85,9 @@ export default function Product() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <img src="/logo/logo_main.png" alt="" className="mx-auto h-16 w-auto opacity-15" />
+          <img src="/logo/logo_loading.png" alt="" className="mx-auto h-16 w-auto opacity-15" />
           <p className="mb-4 mt-4 text-ink/55">{t("productNotFound")}</p>
-          <Link to="/" className="font-medium text-clay hover:underline">
+          <Link to="/catalog" className="font-medium text-clay hover:underline">
             {t("backToCatalogLink")}
           </Link>
         </div>
@@ -111,12 +111,12 @@ export default function Product() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6">
-        <Link to="/" className="text-sm font-medium text-ink/50 transition hover:text-clay">
+        <Link to="/catalog" className="text-sm font-medium text-ink/50 transition hover:text-clay">
           {t("backToCatalog")}
         </Link>
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo/logo_mini.png" alt="" className="h-8 w-auto" />
+            <img src="/logo/logo_main.png" alt="" className="h-8 w-auto" />
             <span className="font-display text-xl text-ink">Шебер</span>
           </Link>
           <LangSwitch variant="light" />

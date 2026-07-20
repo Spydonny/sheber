@@ -4,7 +4,7 @@ import { availabilityLabel, useLang } from "../i18n.tsx";
 import { localizeProduct } from "../localize.ts";
 import type { Product } from "../types.ts";
 
-const PLACEHOLDER = "/logo/logo_loading.png";
+const PLACEHOLDER = "/logo/logo_mini.png";
 
 export default function ProductCard({ product: raw }: { product: Product }) {
   const { lang, t } = useLang();
