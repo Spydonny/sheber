@@ -50,6 +50,11 @@ export interface Product {
   sales: number;
   published_at?: number;
   created_at?: number;
+  seller_phone?: string | null;
+  seller_contact?: {
+    phone?: string | null;
+    link?: string | null;
+  };
   translations?: { kk?: ProductTranslation };
 }
 
@@ -57,6 +62,7 @@ export type Categories = Record<string, string>;
 
 export interface LeadResponse {
   contact_url: string | null;
+  phone: string | null;
 }
 
 export interface Stats {

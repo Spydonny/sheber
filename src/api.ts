@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
 /** Ссылки на ботов-каналы приёма мастеров (задаются в front/.env). */
 export const BOT_LINKS = {
-  telegram: import.meta.env.VITE_TG_BOT_URL || "https://t.me/sheber_bot",
+  telegram: import.meta.env.VITE_TG_BOT_URL || "https://t.me/sheber_market_bot",
   whatsapp: import.meta.env.VITE_WA_BOT_URL || "https://wa.me/",
 };
 
