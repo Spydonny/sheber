@@ -58,6 +58,21 @@ export interface Product {
   translations?: { kk?: ProductTranslation };
 }
 
+export interface StoryboardCard {
+  id: number;
+  type: string;
+  title: string;
+  subtitle: string;
+  bullets: string[];
+  /** media_id сгенерированной ботом картинки (Gemini). Есть только после /genimages. */
+  generated_image_id?: string;
+}
+
+export interface Storyboard {
+  product_analysis?: Record<string, unknown>;
+  cards: StoryboardCard[];
+}
+
 export type Categories = Record<string, string>;
 
 export interface LeadResponse {

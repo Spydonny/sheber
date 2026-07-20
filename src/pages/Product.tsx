@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { api, formatPrice } from "../api.ts";
+import { api, formatPrice, mediaUrl } from "../api.ts";
 import Footer from "../components/Footer.tsx";
 import ProductCard from "../components/ProductCard.tsx";
 import LangSwitch from "../components/LangSwitch.tsx";
 import { OrnamentDivider } from "../components/Ornament.tsx";
 import { availabilityLabel, useLang } from "../i18n.tsx";
 import { localizeProduct } from "../localize.ts";
-import type { Product as ProductType } from "../types.ts";
+import type { Product as ProductType, StoryboardCard } from "../types.ts";
 
 const PLACEHOLDER = "/logo/logo_loading.png";
 
@@ -15,6 +15,7 @@ export default function Product() {
   const { lang, t } = useLang();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductType | null>(null);
+  const [storyCards, setStoryCards] = useState<StoryboardCard[]>([]);
   const [similar, setSimilar] = useState<ProductType[]>([]);
   const [error, setError] = useState(false);
   const [activePhoto, setActivePhoto] = useState(0);
@@ -29,6 +30,7 @@ export default function Product() {
     // (React 18 StrictMode в dev монтирует эффекты дважды).
     fetchedFor.current = id;
     setProduct(null);
+    setStoryCards([]);
     setSimilar([]);
     setActivePhoto(0);
     setError(false);
@@ -44,6 +46,12 @@ export default function Product() {
           .catch(() => setSimilar([]));
       })
       .catch(() => setError(true));
+    // Сториборд — best-effort: 404, пока бот не сгенерировал (/cards + /genimages).
+    // Показываем только карточки с реальной сгенерированной картинкой.
+    api
+      .storyboard(id)
+      .then((sb) => setStoryCards((sb.cards || []).filter((c) => c.generated_image_id)))
+      .catch(() => setStoryCards([]));
   }, [id]);
 
   async function handleContact() {
@@ -97,7 +105,7 @@ export default function Product() {
 
   const localized = localizeProduct(product, lang);
   const hasPhoto = Boolean(localized.photos?.length);
-  const photos = localized.photos?.length ? localized.photos : [PLACEHOLDER];
+  const photos = localized.photos?.length ? localized.photos.map(mediaUrl) : [PLACEHOLDER];
   const inStock = localized.availability === "в наличии";
 
   return (
@@ -116,52 +124,40 @@ export default function Product() {
       </div>
 
       <main className="mx-auto max-w-5xl px-4 pb-16">
-        <div className="grid gap-8 md:grid-cols-2">
-          <div>
-            <div className="aspect-square overflow-hidden rounded-2xl bg-line/40 ring-1 ring-line shadow-warm">
-              <img
-                src={photos[activePhoto]}
-                alt={localized.title}
-                className={
-                  hasPhoto ? "h-full w-full object-cover" : "h-full w-full object-contain p-16 opacity-60"
-                }
-                onError={(e) => (e.currentTarget.src = PLACEHOLDER)}
-              />
-            </div>
-            {photos.length > 1 && (
-              <div className="mt-3 flex gap-2">
-                {photos.map((p, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActivePhoto(i)}
-                    className={`h-16 w-16 overflow-hidden rounded-xl ring-2 transition ${
-                      i === activePhoto ? "ring-clay" : "ring-line hover:ring-clay/40"
-                    }`}
-                  >
-                    <img src={p} alt="" className="h-full w-full object-cover" />
-                  </button>
-                ))}
+        <div className="grid gap-8 md:grid-cols-5">
+          {/* ФОТО — ~40%, sticky, чтобы не оставлять пустоты рядом с описанием */}
+          <div className="md:col-span-2">
+            <div className="md:sticky md:top-6">
+              <div className="aspect-square overflow-hidden rounded-2xl bg-line/40 ring-1 ring-line shadow-warm">
+                <img
+                  src={photos[activePhoto]}
+                  alt={localized.title}
+                  className={
+                    hasPhoto ? "h-full w-full object-cover" : "h-full w-full object-contain p-14 opacity-60"
+                  }
+                  onError={(e) => (e.currentTarget.src = PLACEHOLDER)}
+                />
               </div>
-            )}
-
-            {/* Условия покупки */}
-            <div className="mt-5 space-y-2.5 rounded-2xl bg-card p-5 text-sm ring-1 ring-line">
-              <p className="flex items-start gap-2.5 text-ink/70">
-                <span className="mt-0.5 text-clay">✓</span>
-                {localized.delivery || t("deliveryDefault")}
-              </p>
-              <p className="flex items-start gap-2.5 text-ink/70">
-                <span className="mt-0.5 text-clay">✓</span>
-                {t("directPayment")}
-              </p>
-              <p className="flex items-start gap-2.5 text-ink/70">
-                <span className="mt-0.5 text-clay">✓</span>
-                {t("customOrder")}
-              </p>
+              {photos.length > 1 && (
+                <div className="mt-3 flex gap-2">
+                  {photos.map((p, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActivePhoto(i)}
+                      className={`h-16 w-16 overflow-hidden rounded-xl ring-2 transition ${
+                        i === activePhoto ? "ring-clay" : "ring-line hover:ring-clay/40"
+                      }`}
+                    >
+                      <img src={p} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="rounded-2xl bg-card p-6 ring-1 ring-line shadow-warm sm:p-7">
+          {/* ИНФО — ~60%: цена → кнопка → доставка → описание */}
+          <div className="rounded-2xl bg-card p-6 ring-1 ring-line shadow-warm sm:p-7 md:col-span-3">
             <div className="flex items-start justify-between gap-3">
               <div>
                 {localized.brand && (
@@ -188,6 +184,11 @@ export default function Product() {
                   <span className="text-ink/40">({localized.reviews_count})</span>
                 </span>
               )}
+              {localized.sales ? (
+                <span>
+                  {localized.sales} {t("soldSuffix")}
+                </span>
+              ) : null}
               <span>
                 {localized.views || 0} {t("viewsSuffix")}
               </span>
@@ -206,19 +207,66 @@ export default function Product() {
               </div>
             )}
 
-            <p className="mt-5 font-display text-4xl text-clay">
-              {formatPrice(localized.price, localized.currency)}
-            </p>
-            {localized.price_note && <p className="mt-1 text-xs text-ink/40">{localized.price_note}</p>}
-            <p className="mt-2 text-sm text-ink/60">
-              <span className={inStock ? "font-semibold text-clay-dark" : ""}>
-                {inStock ? `● ${availabilityLabel(lang, "в наличии")}` : availabilityLabel(lang, localized.availability || "под заказ")}
+            {/* Цена — доминанта карточки */}
+            <div className="mt-6 flex flex-wrap items-end gap-x-3 gap-y-1">
+              <p className="font-display text-[2.75rem] leading-none text-clay-dark">
+                {formatPrice(localized.price, localized.currency)}
+              </p>
+              {localized.old_price && localized.old_price > localized.price ? (
+                <>
+                  <span className="pb-1 text-lg text-ink/35 line-through">
+                    {formatPrice(localized.old_price, localized.currency)}
+                  </span>
+                  <span className="mb-1.5 rounded-md bg-clay px-2 py-0.5 text-xs font-bold text-paper">
+                    −{Math.round((1 - localized.price / localized.old_price) * 100)}%
+                  </span>
+                </>
+              ) : null}
+            </div>
+            {localized.price_note && <p className="mt-1.5 text-xs text-ink/40">{localized.price_note}</p>}
+            <p className="mt-2 text-sm">
+              <span
+                className={`inline-flex items-center gap-1.5 ${
+                  inStock ? "font-semibold text-clay-dark" : "text-ink/55"
+                }`}
+              >
+                <span className={`h-2 w-2 rounded-full ${inStock ? "bg-clay" : "bg-ink/25"}`} />
+                {inStock ? availabilityLabel(lang, "в наличии") : availabilityLabel(lang, localized.availability || "под заказ")}
               </span>
             </p>
 
+            {/* Кнопка покупки — сразу под ценой */}
+            <button
+              onClick={handleContact}
+              disabled={contacting}
+              className="mt-5 w-full rounded-xl bg-clay py-4 text-[15px] font-bold text-paper shadow-warm-lg transition hover:bg-clay-dark disabled:opacity-60"
+            >
+              {contacting ? t("contacting") : t("contactSeller")}
+            </button>
+            <p className="mt-2.5 text-center text-xs text-ink/35">{t("contactHint")}</p>
+
+            {/* Условия покупки — доставка сразу после действия */}
+            <div className="mt-5 space-y-2.5 rounded-2xl bg-paper/70 p-5 text-sm ring-1 ring-line">
+              <p className="flex items-start gap-2.5 text-ink/75">
+                <span className="mt-0.5 font-bold text-clay">✓</span>
+                {localized.delivery || t("deliveryDefault")}
+              </p>
+              <p className="flex items-start gap-2.5 text-ink/75">
+                <span className="mt-0.5 font-bold text-clay">✓</span>
+                {t("directPayment")}
+              </p>
+              <p className="flex items-start gap-2.5 text-ink/75">
+                <span className="mt-0.5 font-bold text-clay">✓</span>
+                {t("customOrder")}
+              </p>
+            </div>
+
             <OrnamentDivider className="my-6" />
 
-            <p className="whitespace-pre-line leading-relaxed text-ink/80">{localized.description}</p>
+            {/* Описание — с левым акцентом, чтобы не была «глухая колонка» */}
+            <p className="whitespace-pre-line border-l-2 border-clay/30 pl-4 leading-relaxed text-ink/80">
+              {localized.description}
+            </p>
 
             {localized.options && localized.options.length > 0 && (
               <div className="mt-6 space-y-3">
@@ -244,19 +292,20 @@ export default function Product() {
 
             {localized.characteristics && Object.keys(localized.characteristics).length > 0 && (
               <div className="mt-7">
-                <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-ink/45">
+                <h2 className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-ink/45">
                   {t("characteristics")}
                 </h2>
-                <table className="w-full text-sm">
-                  <tbody>
-                    {Object.entries(localized.characteristics).map(([k, v]) => (
-                      <tr key={k} className="border-t border-line">
-                        <td className="py-2 pr-4 align-top text-ink/50">{k}</td>
-                        <td className="py-2 text-ink/85">{v}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <dl className="overflow-hidden rounded-xl ring-1 ring-line">
+                  {Object.entries(localized.characteristics).map(([k, v], i) => (
+                    <div
+                      key={k}
+                      className={`flex gap-4 px-4 py-2.5 text-sm ${i % 2 === 0 ? "bg-paper/60" : "bg-card"}`}
+                    >
+                      <dt className="w-2/5 shrink-0 text-ink/50">{k}</dt>
+                      <dd className="font-medium text-ink/85">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             )}
 
@@ -272,17 +321,55 @@ export default function Product() {
                 ))}
               </div>
             )}
-
-            <button
-              onClick={handleContact}
-              disabled={contacting}
-              className="mt-8 w-full rounded-xl bg-clay py-3.5 font-bold text-paper shadow-warm transition hover:bg-clay-dark disabled:opacity-60"
-            >
-              {contacting ? t("contacting") : t("contactSeller")}
-            </button>
-            <p className="mt-3 text-center text-xs text-ink/35">{t("contactHint")}</p>
           </div>
         </div>
+
+        {storyCards.length > 0 && (
+          <section className="mt-16">
+            <OrnamentDivider />
+            <div className="mt-8 text-center">
+              <h2 className="font-display text-2xl text-ink">{t("aboutProduct")}</h2>
+              <p className="mt-1.5 text-xs text-ink/40">{t("aboutProductHint")}</p>
+            </div>
+            <div className="mx-auto mt-8 max-w-3xl space-y-6">
+              {storyCards.map((card) => (
+                <article
+                  key={card.id}
+                  className="overflow-hidden rounded-2xl bg-card ring-1 ring-line shadow-warm"
+                >
+                  <div className="aspect-square bg-line/40 sm:aspect-[4/3]">
+                    <img
+                      src={mediaUrl(card.generated_image_id!)}
+                      alt={card.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {(card.title || card.subtitle || card.bullets?.length > 0) && (
+                    <div className="p-6 sm:p-7">
+                      {card.title && (
+                        <h3 className="font-display text-xl leading-snug text-ink">{card.title}</h3>
+                      )}
+                      {card.subtitle && (
+                        <p className="mt-1.5 text-sm leading-relaxed text-ink/60">{card.subtitle}</p>
+                      )}
+                      {card.bullets?.length > 0 && (
+                        <ul className="mt-4 space-y-2">
+                          {card.bullets.map((b, i) => (
+                            <li key={i} className="flex items-start gap-2.5 text-sm text-ink/75">
+                              <span className="mt-0.5 font-bold text-clay">✓</span>
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         {similar.length > 0 && (
           <section className="mt-16">

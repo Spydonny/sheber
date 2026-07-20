@@ -70,17 +70,23 @@ export default function Catalog() {
       <header className="relative overflow-hidden bg-ink text-paper">
         <HornMark className="pointer-events-none absolute -right-16 -top-10 h-64 w-auto text-clay/15" />
         <HornMark className="pointer-events-none absolute -left-24 bottom-0 h-44 w-auto text-paper/5" />
-        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-12">
-          <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-            <div>
-              <div className="flex items-center gap-4">
-                <img src="/logo/logo_mini.png" alt="" className="h-16 w-auto" />
-                <h1 className="font-display text-6xl tracking-tight">Шебер</h1>
-                <LangSwitch variant="dark" />
-              </div>
-              <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-paper/60">{t("tagline")}</p>
+        <div className="relative mx-auto max-w-6xl px-4 pb-9 pt-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/logo/logo_mini.png" alt="" className="h-10 w-auto" />
+              <span className="font-display text-2xl tracking-tight">Шебер</span>
+            </div>
+            <LangSwitch variant="dark" />
+          </div>
+
+          <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-[1fr_20rem] md:items-end">
+            <div className="max-w-2xl">
+              <h1 className="font-display text-4xl leading-[1.08] tracking-tight sm:text-[3.25rem]">
+                {t("heroHeadline")}
+              </h1>
+              <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-paper/60">{t("tagline")}</p>
               {stats && stats.products > 0 && (
-                <div className="mt-5 flex gap-7 text-sm">
+                <div className="mt-6 flex gap-8 text-sm">
                   <div>
                     <p className="font-display text-2xl text-clay">{stats.products}</p>
                     <p className="text-xs text-paper/45">
@@ -102,13 +108,24 @@ export default function Catalog() {
                 </div>
               )}
             </div>
-            <div className="flex w-full flex-col gap-3 md:w-96">
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder={t("searchPlaceholder")}
-                className="w-full rounded-xl border border-paper/15 bg-paper px-4 py-3 text-sm text-ink shadow-warm outline-none transition placeholder:text-ink/40 focus:border-clay focus:ring-2 focus:ring-clay/30"
-              />
+            <div className="flex w-full flex-col gap-3">
+              <div className="relative">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/35"
+                >
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                  <path d="m20 20-3.2-3.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder={t("searchPlaceholder")}
+                  className="w-full rounded-xl border border-paper/15 bg-paper py-3.5 pl-11 pr-4 text-[15px] text-ink shadow-warm outline-none transition placeholder:text-ink/40 focus:border-clay focus:ring-2 focus:ring-clay/30"
+                />
+              </div>
               <a
                 href={BOT_LINKS.telegram}
                 target="_blank"
