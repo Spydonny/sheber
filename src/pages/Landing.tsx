@@ -74,11 +74,11 @@ export default function Landing() {
           className="pointer-events-none absolute -left-24 -bottom-12 h-44 w-auto opacity-[0.06]"
         />
 
-        <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:py-28">
-          <span className="inline-flex items-center gap-2 rounded-full bg-paper/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-clay ring-1 ring-paper/15">
+        <div className="relative mx-auto max-w-3xl px-4 py-5 text-center sm:py-14">
+          {/* <span className="inline-flex items-center gap-2 rounded-full bg-paper/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-clay ring-1 ring-paper/15">
             <img src="/logo/logo_mini.png" alt="" className="h-3.5 w-auto" />
             {t("heroEyebrow")}
-          </span>
+          </span> */}
 
           <h1 className="mt-6 font-display text-[2.5rem] leading-[1.06] tracking-tight sm:text-6xl">
             {t("heroHeadline")}
