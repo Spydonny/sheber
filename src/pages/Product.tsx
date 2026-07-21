@@ -128,13 +128,14 @@ export default function Product() {
           {/* ФОТО — ~40%, sticky, чтобы не оставлять пустоты рядом с описанием */}
           <div className="md:col-span-2">
             <div className="md:sticky md:top-6">
-              <div className="aspect-square overflow-hidden rounded-2xl bg-line/40 ring-1 ring-line shadow-warm">
+              <div className="overflow-hidden rounded-2xl bg-line/40 ring-1 ring-line shadow-warm">
+                {/* Без фиксированной пропорции: высота блока подстраивается под реальные
+                    габариты картинки (w-full h-auto), поэтому WB-карточка (обычно 3:4)
+                    и любое фото мастера любых пропорций показываются целиком, без обрезки. */}
                 <img
                   src={photos[activePhoto]}
                   alt={localized.title}
-                  className={
-                    hasPhoto ? "h-full w-full object-cover" : "h-full w-full object-contain p-14 opacity-60"
-                  }
+                  className={hasPhoto ? "block w-full h-auto" : "aspect-square w-full object-contain p-14 opacity-60"}
                   onError={(e) => (e.currentTarget.src = PLACEHOLDER)}
                 />
               </div>
@@ -148,7 +149,7 @@ export default function Product() {
                         i === activePhoto ? "ring-clay" : "ring-line hover:ring-clay/40"
                       }`}
                     >
-                      <img src={p} alt="" className="h-full w-full object-cover" />
+                      <img src={p} alt="" className="h-full w-full object-contain" />
                     </button>
                   ))}
                 </div>
@@ -337,12 +338,14 @@ export default function Product() {
                   key={card.id}
                   className="overflow-hidden rounded-2xl bg-card ring-1 ring-line shadow-warm"
                 >
-                  <div className="aspect-square bg-line/40 sm:aspect-[4/3]">
+                  <div className="bg-line/40">
+                    {/* Без фиксированной пропорции — блок под каждую карточку подстраивается
+                        под её реальные габариты, ничего не обрезается. */}
                     <img
                       src={mediaUrl(card.generated_image_id!)}
                       alt={card.title}
                       loading="lazy"
-                      className="h-full w-full object-cover"
+                      className="block w-full h-auto"
                     />
                   </div>
                   {(card.title || card.subtitle || card.bullets?.length > 0) && (

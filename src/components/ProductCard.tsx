@@ -23,12 +23,15 @@ export default function ProductCard({ product: raw }: { product: Product }) {
       to={`/product/${raw.id}`}
       className="group flex flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-line shadow-warm transition duration-300 hover:-translate-y-1 hover:shadow-warm-lg hover:ring-clay/60"
     >
-      <div className="relative aspect-square overflow-hidden bg-line/40">
+      {/* Рамка сетки остаётся фиксированной (иначе карточки в ряду «прыгают» по
+          высоте), но object-contain вместо object-cover не обрезает картинку под любую
+          её реальную пропорцию — просто вписывает целиком. */}
+      <div className="relative aspect-[3/4] overflow-hidden bg-line/40">
         <img
           src={photo}
           alt={product.title}
           className={`h-full w-full transition duration-500 ${
-            hasPhoto ? "object-cover group-hover:scale-[1.05]" : "object-contain p-10 opacity-60"
+            hasPhoto ? "object-contain group-hover:scale-[1.05]" : "object-contain p-10 opacity-60"
           }`}
           onError={(e) => (e.currentTarget.src = PLACEHOLDER)}
         />
