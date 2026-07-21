@@ -23,3 +23,33 @@ body {
 ::selection {
   background: rgba(188, 91, 53, 0.25);
 }
+
+/* Появление блоков при скролле (components/Reveal.tsx) — используется только на
+   лендинге, на другие страницы не влияет. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Уважаем настройку ОС «уменьшить анимацию» — точечно на классах, которые реально
+   анимируются (лендинг), не глушим transition/anim по всему сайту. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-visible,
+  .animate-fade-up,
+  .animate-float,
+  .animate-float-slow,
+  .animate-glow-pulse {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

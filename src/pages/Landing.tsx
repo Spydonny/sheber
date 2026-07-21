@@ -4,6 +4,7 @@ import { api } from "../api.ts";
 import ChannelModal from "../components/ChannelModal.tsx";
 import Footer from "../components/Footer.tsx";
 import ProductCard from "../components/ProductCard.tsx";
+import Reveal from "../components/Reveal.tsx";
 import SiteHeader from "../components/SiteHeader.tsx";
 import { plural, useLang } from "../i18n.tsx";
 import type { Product, Stats } from "../types.ts";
@@ -57,7 +58,7 @@ export default function Landing() {
       {/* ГЕРОЙ — тёплое свечение + зеркальные рога поверх чернильного фона */}
       <section className="relative overflow-hidden bg-ink text-paper">
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 animate-glow-pulse"
           style={{
             backgroundImage:
               "radial-gradient(680px 340px at 50% -8%, rgba(188,91,53,.20), transparent 70%)",
@@ -66,12 +67,13 @@ export default function Landing() {
         <img
           src="/logo/logo_mini.png"
           alt=""
-          className="pointer-events-none absolute -right-16 -top-12 h-60 w-auto opacity-[0.12]"
+          className="pointer-events-none absolute -right-16 -top-12 h-60 w-auto animate-float-slow opacity-[0.12]"
         />
         <img
           src="/logo/logo_mini.png"
           alt=""
-          className="pointer-events-none absolute -left-24 -bottom-12 h-44 w-auto opacity-[0.06]"
+          className="pointer-events-none absolute -left-24 -bottom-12 h-44 w-auto animate-float opacity-[0.06]"
+          style={{ animationDelay: "-4s" }}
         />
 
         <div className="relative mx-auto max-w-3xl px-4 py-5 text-center sm:py-14">
@@ -80,36 +82,50 @@ export default function Landing() {
             {t("heroEyebrow")}
           </span> */}
 
-          <h1 className="mt-6 font-display text-[2.5rem] leading-[1.06] tracking-tight sm:text-6xl">
+          <h1 className="mt-6 animate-fade-up font-display text-[2.5rem] leading-[1.06] tracking-tight sm:text-6xl">
             {t("heroHeadline")}
           </h1>
 
-          <div className="mx-auto mt-7 flex items-center justify-center gap-4">
+          <div
+            className="mx-auto mt-7 flex animate-fade-up items-center justify-center gap-4"
+            style={{ animationDelay: "100ms" }}
+          >
             <span className="h-px w-12 bg-paper/20" />
             <img src="/logo/logo_main.png" alt="" className="h-9 w-auto" />
             <span className="h-px w-12 bg-paper/20" />
           </div>
 
-          <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-paper/60">{t("tagline")}</p>
+          <p
+            className="mx-auto mt-6 max-w-xl animate-fade-up text-[15px] leading-relaxed text-paper/60"
+            style={{ animationDelay: "200ms" }}
+          >
+            {t("tagline")}
+          </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <div
+            className="mt-9 flex animate-fade-up flex-wrap items-center justify-center gap-3"
+            style={{ animationDelay: "300ms" }}
+          >
             <Link
               to="/catalog"
-              className="rounded-xl bg-clay px-7 py-3.5 text-[15px] font-bold text-paper shadow-warm-lg transition hover:bg-clay-dark"
+              className="rounded-xl bg-clay px-7 py-3.5 text-[15px] font-bold text-paper shadow-warm-lg transition hover:bg-clay-dark hover:shadow-warm-lg hover:-translate-y-0.5 active:translate-y-0"
             >
               {t("exploreCatalog")}
             </Link>
             <button
               type="button"
               onClick={() => setChannelModalOpen(true)}
-              className="rounded-xl border border-paper/25 px-7 py-3.5 text-[15px] font-bold text-paper/90 transition hover:border-clay hover:text-paper"
+              className="rounded-xl border border-paper/25 px-7 py-3.5 text-[15px] font-bold text-paper/90 transition hover:border-clay hover:text-paper hover:-translate-y-0.5 active:translate-y-0"
             >
               {t("becomeSeller")}
             </button>
           </div>
 
           {stats && stats.products > 0 && (
-            <div className="mx-auto mt-14 flex max-w-md items-center justify-center divide-x divide-paper/10">
+            <div
+              className="mx-auto mt-14 flex max-w-md animate-fade-up items-center justify-center divide-x divide-paper/10"
+              style={{ animationDelay: "400ms" }}
+            >
               {[
                 [stats.products, t("products_one"), t("products_few"), t("products_many")],
                 [stats.sellers, t("sellers_one"), t("sellers_few"), t("sellers_many")],
@@ -132,7 +148,7 @@ export default function Landing() {
       <section className="mx-auto max-w-6xl px-4 py-24 sm:py-28">
         <div className="grid gap-x-10 gap-y-16 md:grid-cols-12">
           {VALUES.map((v, i) => (
-            <div key={v.title} className={VALUE_COLS[i]}>
+            <Reveal key={v.title} delay={i * 120} className={VALUE_COLS[i]}>
               <div className="relative border-t border-line pt-8">
                 {/* бронзовая насечка на линии — единственный «декор» */}
                 <span className="absolute left-0 top-0 h-0.5 w-12 -translate-y-px bg-clay" />
@@ -153,7 +169,7 @@ export default function Landing() {
                 </h3>
                 <p className="mt-3 max-w-[30ch] text-[15px] leading-relaxed text-ink/55">{v.text}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -161,7 +177,7 @@ export default function Landing() {
       {/* СВЕЖЕЕ НА ВИТРИНЕ — превью последних изделий */}
       {featured.length > 0 && (
         <section className="mx-auto max-w-6xl px-4 pb-16 sm:pb-20">
-          <div className="flex flex-wrap items-end justify-between gap-2">
+          <Reveal className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <h2 className="font-display text-3xl text-ink">{t("featuredTitle")}</h2>
               <p className="mt-1.5 text-sm text-ink/45">{t("featuredSubtitle")}</p>
@@ -172,10 +188,12 @@ export default function Landing() {
             >
               {t("allProductsLink")}
             </Link>
-          </div>
+          </Reveal>
           <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
-            {featured.map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {featured.map((p, i) => (
+              <Reveal key={p.id} delay={i * 90}>
+                <ProductCard product={p} />
+              </Reveal>
             ))}
           </div>
         </section>
