@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api, BOT_LINKS } from "../api.ts";
+import { api } from "../api.ts";
+import ChannelModal from "../components/ChannelModal.tsx";
 import Footer from "../components/Footer.tsx";
 import ProductCard from "../components/ProductCard.tsx";
 import SiteHeader from "../components/SiteHeader.tsx";
@@ -33,6 +34,7 @@ export default function Landing() {
   const { t } = useLang();
   const [stats, setStats] = useState<Stats | null>(null);
   const [featured, setFeatured] = useState<Product[]>([]);
+  const [channelModalOpen, setChannelModalOpen] = useState(false);
 
   useEffect(() => {
     api.stats().then(setStats).catch(() => setStats(null));
@@ -97,14 +99,13 @@ export default function Landing() {
             >
               {t("exploreCatalog")}
             </Link>
-            <a
-              href={BOT_LINKS.telegram}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => setChannelModalOpen(true)}
               className="rounded-xl border border-paper/25 px-7 py-3.5 text-[15px] font-bold text-paper/90 transition hover:border-clay hover:text-paper"
             >
               {t("becomeSeller")}
-            </a>
+            </button>
           </div>
 
           {stats && stats.products > 0 && (
@@ -182,6 +183,8 @@ export default function Landing() {
 
       {/* Как стать продавцом + ссылки на ботов */}
       <Footer />
+
+      <ChannelModal open={channelModalOpen} onClose={() => setChannelModalOpen(false)} />
     </div>
   );
 }
